@@ -2,13 +2,17 @@ from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
+from process_book_data import process_data
 
-url: str = "test"
-key: str = "test"
+url: str = ""
+key: str = ""
 supabase: Client = create_client(url, key)
 
 
 app = Flask(__name__)
+
+
+app.register_blueprint(process_data, url_prefix='/process_data')
 
 # Endpoint to create a user
 @app.route('/create_user', methods=['POST'])

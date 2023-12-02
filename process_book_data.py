@@ -1,21 +1,15 @@
 import supabase
 from flask import Flask, request, Response, Blueprint, jsonify
+import requests
 
-app = Flask(__name__)
-client = supabase.create_client(
-    'https://<your-project-id>.supabase.co',
-    '<your-anon-key>'
-)
+bucket_url='https://qzmfnmaqhitbkitxdwwq.supabase.co/storage/v1/object/public/books-data/'
 
-
-user_routes = Blueprint('user_routes', __name__)
+process_data = Blueprint('process_data', __name__)
 
 # Define your new endpoint in this Blueprint
-@user_routes.route('/download/<bucket>/<file>')
-def download(bucket, file):
-    response = client.storage.from_(bucket).download(file)
-    print(response)
-    if response.error:
-        return Response('Error downloading file', status=500)
-    else:
-        return Response(response.content, mimetype=response.content_type)
+@process_data.route('/download/<file>', methods=['GET'])
+def download(file):
+    response = response = requests.get(bucket_url+file)
+    file_contents = response.content
+    print(file_contents)
+    return Response(response.content, mimetype=response.content_type)
