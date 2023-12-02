@@ -1,1 +1,1 @@
-Sometimes you ask questions because you seek connection; sometimes you seek answers. Trying to build a future where we can do both. 
+The questions we ask aren't seeking answers, they are seeking connection. Trying to build a future where we can realise that
