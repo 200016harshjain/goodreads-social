@@ -24,7 +24,6 @@ def download(file):
     return Response(response, mimetype=response)
 
 file_path = 'book_146736008-harsh-jain.jl'
-
 records = []
 with open(file_path, 'r') as file:
     for i, line in enumerate(file, 1):  # Enumerate lines, starting at line 1
@@ -41,9 +40,16 @@ with open(file_path, 'r') as file:
             print(f"Line {i}: JSONDecodeError: {e}")
             print(f"Line {i} content: {line}")
 
+#get the user name from the file_path
+start_marker = "book_"
+end_marker = ".jl"
+start_index = file_path.find(start_marker) + len(start_marker)
+end_index = file_path.rfind(end_marker)
+goodreads_username = file_path[start_index:end_index]
 
-def insert_into_books_authors_table(data):
-    
+
+def insert_into_books_author_genres_user_table(data):
+
     #initially insert the book and description into books table and have a 'book-id', loop over author - insert each author (get author id) --> then insert into book author mapping
     for i in range(0,len(data)):
         book_data = {
@@ -54,17 +60,21 @@ def insert_into_books_authors_table(data):
         #inserted book's 'id'
         book_id = book_data_response[1][0].get('book_id')
         #used [1][0].get() as data format  : [x,[{"book_id":value}]] 
-        #do the author bit
         author_list= df.loc[i,"author"]
         for author in author_list:
             author_data,author_count=supabase.table("authors").insert({"author_name":author}).execute()
             author_id = author_data[1][0].get('author_id')
             author_book_mapping,author_book_mapping_count = supabase.table("book_author_mapping").insert({"book_id":book_id,"author_id":author_id}).execute()
+        genre_list=df.loc[i,"genres"]
+        for genre in genre_list:
+            genre_data_response,genre_count=supabase.table("genres").insert({"genre_name":genre}).execute()
+            genre_id = genre_data_response[1][0].get('genre_id')
+        book_user_mapping,count=supabase.table("user_book_interactions").insert({"user_id":goodreads_username,"book_id":book_id}).execute()
+
         
-
-
      
 
 df = pd.DataFrame(records)
-insert_into_books_authors_table(df[['title','author','description']])
+insert_into_books_author_genres_user_table(df[['title','author','description','genres']])
+
 
